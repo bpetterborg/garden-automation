@@ -1,2 +1,4 @@
 # irrigation-sys
-Code to control RPi-based irrigation and garden monitoring system
+Code to control RPi-based irrigation and garden monitoring system.
+
+Currently Incomplete, this project is unsupported.
