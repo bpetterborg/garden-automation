@@ -1,11 +1,12 @@
 # Controls irrigation system for garden, using
-# a Raspberry Pi.
+# a Raspberry Pi, outputs data to flask frontend
 
 # TODO:
-#  - write GUI frontend (probably in Flask)
+#  - finish writing GUI frontend for flask
 #  - add support for: 
 #       - reading water storage level
-#  - add matplotlib graphs in flask
+#  - add matplotlib graphs, display in flask
+#  - test everything
 
 # importing stuff
 from gpiozero import LED  # controls rpi gpio
@@ -26,7 +27,7 @@ tempSensorSleepTime = 2.0 # don't read temp sensor too frequently
 # get temp and humidity
 while True:
     try:
-        global temp
+        global temp # Yeah, I know I'm not supposed to do that
         global humidity
         temp = tempSensor.temperature
         humidity = tempSensor.humidity
@@ -50,5 +51,5 @@ def home():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host = '0.0.0.0')
     
