@@ -3,9 +3,11 @@
 
 # TODO:
 #  - finish writing GUI frontend for flask
-#  - add support for: 
+#  - add features: 
 #       - reading water storage level
-#       - checking soil moisture levels
+#       - reading soil moisture levels
+#       - manual mode
+#       - remotely setting of relayXTimeOn
 #  - add matplotlib graphs, display in flask
 #  - test everything, on RPi
 
@@ -20,6 +22,9 @@ import adafruit_dht # read DHT11 data
 relay0 = LED(26)
 relay1 = LED(20)
 relay2 = LED(21)
+relay0TimeOn = 120 # solenoid (set correct values)
+relay1TimeOn = 120 # pump
+relay2TimeOn = 120 # unused
 
 # yl69/fc28 sensor
 soilMoistureSensor0 = DigitalInputDevice(4) # change 4 to whatever pin is in use
@@ -32,6 +37,28 @@ tempSensor = adafruit_dht.DHT11(board.D17)
 tempSensorSleepTime = 2.0 # don't read temp sensor too frequently
 temp = tempSensor.temperature
 humidity = tempSensor.humidity
+
+# relay control (3ch)
+def activateRelay0():
+    print('activating relay0')
+    relay0.on()
+    sleep(relay0TimeOn)
+    print('deactivating relay0')
+    relay0.off()
+
+def activateRelay1():
+    print('activating relay1')
+    relay1.on()
+    sleep(relay1TimeOn)
+    print('deactivating relay1')
+    relay1.off()
+
+def activateRelay2():
+    print('activating relay2')
+    relay0.on()
+    sleep(relay2TimeOn)
+    print('deactivating relay2')
+    relay0.off()
 
 # get soil moisture levels
 while True:
