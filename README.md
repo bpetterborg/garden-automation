@@ -1,4 +1,4 @@
-# irrigation-sys
+# garden-automation
 
 Code to control RPi-based irrigation and garden monitoring system.
 
