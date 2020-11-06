@@ -14,10 +14,13 @@
 # - test everything
 
 # imports
-from gpiozero import LED, DigitalInputDevice  # controls rpi gpio, reads yl69 sensor
+from gpiozero import LED as, DigitalInputDevice  # controls rpi gpio, reads yl69 sensor
 import time
 import board 
 import adafruit_dht # read DHT11 data
+
+print('Garden Automation System - A 0.0.1 \n')
+
 
 # vars
 waterInterval = input('waterIntervals (hours) ' * 3600) # 3600s in hour
@@ -69,10 +72,10 @@ def activateRelay2():
 
 # get moisture sensor info
 while True:
-	if (not soilMoistureSensor0.value):
+	if (not soilMoistureSensor0.value): # nominal value
 		print('Level OK')
 	
-	else:
+	else: # degraded value
 		# run function to activate relay
 		print('Level Low')
 		activateRelay0()
@@ -89,7 +92,6 @@ while True:
 	# getting data from sensors too often results in a lot of errors and bad readings
 	sleep(tempSensorSleepTime)
 
-# functions for scheduling watering
-#def waterSchedule():
-#	activateRelay0()
-#	sleep(int(waterInterval))
+while True:
+	activateRelay0()
+	sleep(int(waterInterval))
