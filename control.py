@@ -51,49 +51,49 @@ humidity0 = tempSensor0.humidity
 # relay control (3ch)
 # solenoid
 def activateRelay0():
-    print('activating relay0') # print fun stuff to the TTY
-    relay0.on()
-    sleep(relay0TimeOn)
-    print('deactivating relay0')
-    relay0.off()
+	print('activating relay0') # print fun stuff to the TTY
+	relay0.on()
+	sleep(relay0TimeOn)
+	print('deactivating relay0')
+	relay0.off()
 
 # pump
 def activateRelay1():
-    print('activating relay1')
-    relay1.on()
-    sleep(relay1TimeOn)
-    print('deactivating relay1')
-    relay1.off()
+	print('activating relay1')
+	relay1.on()
+	sleep(relay1TimeOn)
+	print('deactivating relay1')
+	relay1.off()
 
 # unused
 def activateRelay2():
-    print('activating relay2')
-    relay0.on()
-    sleep(relay2TimeOn)
-    print('deactivating relay2')
-    relay0.off()
+	print('activating relay2')
+	relay0.on()
+	sleep(relay2TimeOn)
+	print('deactivating relay2')
+	relay0.off()
 
 # get soil moisture levels
 while True:
-    if (not soilMoistureSensor0.value):
-        print('Level OK')
-    
-    else:
-        # run function to activate relay
-        print('Level Low')
-        activateRelay0()
+	if (not soilMoistureSensor0.value):
+		print('Level OK')
+	
+	else:
+		# run function to activate relay
+		print('Level Low')
+		activateRelay0()
 
 # get temp and humidity from tempSensor0
 while True:
-    try:
-        print('temp =' + temp0) # change these to print to page
-        print('humidity =' + humidity0)
-    
-    except RuntimeError as error:
-        print(error.args[0]) # these sensors make errors often
+	try:
+		print('temp =' + temp0) # change these to print to page
+		print('humidity =' + humidity0)
+	
+	except RuntimeError as error:
+		print(error.args[0]) # these sensors make errors often
 
-    # getting data from sensors too often results in a lot of errors and bad readings
-    sleep(tempSensorSleepTime)
+	# getting data from sensors too often results in a lot of errors and bad readings
+	sleep(tempSensorSleepTime)
 
 # pyplot things
 # use a for loop to fetch past 48 hours of data
@@ -104,14 +104,14 @@ plot.show()
 # print data to page
 @app.route('/')
 def home():
-    
-    # print data
-    return temp
-    # add soil moisture sensor state
-    # add matplotlib graphs
+	
+	# print data
+	return temp
+	# add soil moisture sensor state
+	# add matplotlib graphs
 
 # print graphs to page (pyplot)
 #def graphs():
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0')
+	app.run(host = '0.0.0.0')
