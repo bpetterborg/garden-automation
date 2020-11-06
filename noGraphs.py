@@ -1,3 +1,5 @@
+# garden automation system, without flask and  matplotlib
+
 # logs data in txt file, every hour
 # might port to mongoDB or something in future
 # manually set frequency  to water plants
@@ -5,7 +7,7 @@
 
 # TODO:
 # - add stuff:
-#       - saves data with mongoDB or txt file
+#       - log data to txt
 #       - setup relay0 for watering plants
 #       - manual control
 #		- if waterInterval is set to something that isn't an integer, ask again
@@ -19,6 +21,7 @@ import adafruit_dht # read DHT11 data
 
 # vars
 waterInterval = input('waterIntervals (hours) ' * 3600) # 3600s in hour
+tempThreshold = input('tempThreshould ')
 
 relay0 = LED(26) # these are gpio, not board pins
 relay1 = LED(20)
@@ -28,11 +31,10 @@ relay2 = LED(21)
 soilMoistureSensor0 = DigitalInputDevice(4) # change 4 to whatever pin is in use
 # will have at least 3 of these, maybe 6(?). figure out which pins
 
-app = Flask(__name__)
-
 # dht11 sensor
 tempSensorSleepTime = 2.0 # don't read temp sensor too frequently, it will freak out
 tempSensor0 = adafruit_dht.DHT11(board.D17) # change these to not use board pins,
+
 temp0 = tempSensor0.temperature
 humidity0 = tempSensor0.humidity
 
@@ -78,8 +80,8 @@ while True:
 # get temp and humidity from tempSensor0
 while True:
 	try:
-		print('temp =' + temp0) # change these to print to page
-		print('humidity =' + humidity0)
+		print('temp0 =' + temp0) # change these to print to page
+		print('humidity0 =' + humidity0)
 	
 	except RuntimeError as error:
 		print(error.args[0]) # these sensors make errors often
@@ -88,7 +90,6 @@ while True:
 	sleep(tempSensorSleepTime)
 
 # functions for scheduling watering
-def waterSchedule():
-	activateRelay0()
-	sleep(int(waterInterval)) # set to int just in case
-
+#def waterSchedule():
+#	activateRelay0()
+#	sleep(int(waterInterval))
