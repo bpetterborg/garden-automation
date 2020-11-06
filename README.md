@@ -12,3 +12,7 @@ through Flask.
  on schedule, temperature, humidity, or by soil moisture level.
 
  - Graphs detailing temperature, humidity, and soil moisture.
+
+ #### Versions
+ `control.py` -> Full version, currently WIP. 
+ `noGraphs.py` -> Same thing, without graphs, as the name would imply.
