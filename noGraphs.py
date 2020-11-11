@@ -7,20 +7,19 @@
 
 # TODO:
 # - add stuff:
-#       - log data to txt
 #       - setup relay0 for watering plants
 #       - manual control
+#		- timestamps for log files
 #		- if waterInterval is set to something that isn't an integer, ask again
 # - test everything
 
 # imports
-from gpiozero import LED as, DigitalInputDevice  # controls rpi gpio, reads yl69 sensor
+from gpiozero import LED, DigitalInputDevice  # controls rpi gpio, reads yl69 sensor
 import time
 import board 
 import adafruit_dht # read DHT11 data
 
 print('Garden Automation System - A 0.0.1 \n')
-
 
 # vars
 waterInterval = input('waterIntervals (hours) ' * 3600) # 3600s in hour
@@ -83,8 +82,20 @@ while True:
 # get temp and humidity from tempSensor0
 while True:
 	try:
-		print('temp0 =' + temp0) # change these to print to page
-		print('humidity0 =' + humidity0)
+		print('temp0 =' + str(temp0)) # change these to print to page
+		print('humidity0 =' + str(humidity0))
+
+		# data logging (humidity0)
+		humidityLogFile = open('humidityLog.txt', 'a')
+
+		# writing stuff to file
+		humidityLogFile.write(str(humidity0)) # add timestamp
+		humidityLogFile.close() # not a clue why i need to do this
+
+		# data logging (temp0)
+		tempLogFile = open('tempLog.txt', 'a') # open file
+		tempLogFile.write(str(temp0)) # add timestamp
+		tempLogFile.close() # close it
 	
 	except RuntimeError as error:
 		print(error.args[0]) # these sensors make errors often
@@ -95,3 +106,4 @@ while True:
 while True:
 	activateRelay0()
 	sleep(int(waterInterval))
+
