@@ -1,55 +1,56 @@
-# Controls irrigation system for garden, using
-# a Raspberry Pi, outputs data to flask frontend
+# garden automation system, without flask and  matplotlib
+
+# logs data in txt file, every hour
+# might port to mongoDB or something in future
+# manually set frequency  to water plants
+# it's like the same thing w/o flask graphs
 
 # TODO:
-#  - finish writing GUI frontend for flask
-#  - add features: 
-#       - reading water storage level
-#       - reading soil moisture levels
-#       - manual watering mode
-#       - remotely setting relayXTimeOn
-#  - add matplotlib graphs, display in flask with pyplot
-#  - test everything, on RPi
+# - add stuff:
+#       - setup relay0 for watering plants
+#       - manual control
+#		- timestamps for log files
+#		- if waterInterval is set to something that isn't an integer, ask again
+# - test everything
 
-# importing stuff for displaying data
-from flask import Flask, render_template # web frontend
-import matplotlib.pyplot as plot # pyplot graphing  (still need to install)
-import numpy # math stuff
-
-# importing stuff for sensors
-from gpiozero import LED, DigitalInputDevice  # controls rpi gpio
-import time
+# imports
+from gpiozero import LED, DigitalInputDevice  # controls rpi gpio, reads yl69 sensor
+from time import sleep, clock_gettime
 import board 
 import adafruit_dht # read DHT11 data
+import datetime # timestamps
 
-# variables
-# relay pins
+print('Garden Automation System - A 0.0.1 \n')
+
+# specify schedule
+waterInterval = input('waterIntervals (hours) ' * 3600) # 3600s in hour
+tempThreshold = input('tempThreshould ')
+wateringDuration = input('wateringDuration (s) ')
+
+# gpio
 relay0 = LED(26) # these are gpio, not board pins
 relay1 = LED(20)
 relay2 = LED(21)
-
-# time to open relays for (s)
-relay0TimeOn = 120 # solenoid (set correct values)
-relay1TimeOn = 120 # pump
-relay2TimeOn = 120 # unused
 
 # yl69/fc28 sensor
 soilMoistureSensor0 = DigitalInputDevice(4) # change 4 to whatever pin is in use
 # will have at least 3 of these, maybe 6(?). figure out which pins
 
-app = Flask(__name__)
-
 # dht11 sensor
 tempSensorSleepTime = 2.0 # don't read temp sensor too frequently, it will freak out
-
-tempSensor0 = adafruit_dht.DHT11(board.D17) # change these to not use board pins
-#tempSensor1 = adafruit_dht.DHT11(board D17)
+tempSensor0 = adafruit_dht.DHT11(board.D17) # change these to not use board pins,
 
 temp0 = tempSensor0.temperature
 humidity0 = tempSensor0.humidity
 
-# relay control (3ch)
-# solenoid
+# specify time to run relays for (seconds)
+relay0TimeOn = wateringDuration
+relay1TimeOn = 120
+relay2TimeOn = 120
+
+# complain if waterInterval or tempThreshould is not an int of flt
+
+# functions for running relays
 def activateRelay0():
 	print('activating relay0') # print fun stuff to the TTY
 	relay0.on()
@@ -73,12 +74,12 @@ def activateRelay2():
 	print('deactivating relay2')
 	relay0.off()
 
-# get soil moisture levels
+# get moisture sensor info
 while True:
-	if (not soilMoistureSensor0.value):
+	if (not soilMoistureSensor0.value): # nominal value
 		print('Level OK')
 	
-	else:
+	else: # degraded value
 		# run function to activate relay
 		print('Level Low')
 		activateRelay0()
@@ -86,8 +87,21 @@ while True:
 # get temp and humidity from tempSensor0
 while True:
 	try:
-		print('temp =' + temp0) # change these to print to page
-		print('humidity =' + humidity0)
+		# get current time
+		currentTime = datetime.datetime.now().isoformat()
+
+		print('temp0 =' + str(temp0)) # change these to print to page
+		print('humidity0 =' + str(humidity0))
+
+		# data logging (humidity0)
+		humidityLogFile = open('humidityLog.txt', 'a')
+		humidityLogFile.write('\n' + str(currentTime) + str(humidity0)) # add timestamp
+		humidityLogFile.close() # close file
+
+		# data logging (temp0)
+		tempLogFile = open('tempLog.txt', 'a')
+		tempLogFile.write('\n' + str(currentTime) + str(temp0)) # add timestamp
+		tempLogFile.close()
 	
 	except RuntimeError as error:
 		print(error.args[0]) # these sensors make errors often
@@ -95,23 +109,6 @@ while True:
 	# getting data from sensors too often results in a lot of errors and bad readings
 	sleep(tempSensorSleepTime)
 
-# pyplot things
-# use a for loop to fetch past 48 hours of data
-plt.plot([1, 2, 3, 4], [1, 4, 9, 16], 'ro')
-plot.show()
-
-
-# print data to page
-@app.route('/')
-def home():
-	
-	# print data
-	return temp
-	# add soil moisture sensor state
-	# add matplotlib graphs
-
-# print graphs to page (pyplot)
-#def graphs():
-
-if __name__ == '__main__':
-	app.run(host = '0.0.0.0')
+while True:
+	activateRelay0()
+	sleep(int(waterInterval))
