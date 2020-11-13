@@ -1,4 +1,6 @@
-# garden automation system, without flask and  matplotlib
+#!/usr/bin/env python3
+
+# garden automation system
 
 # logs data in txt file, every hour
 # might port to mongoDB or something in future
@@ -7,20 +9,18 @@
 
 # TODO:
 # - add stuff:
-#       - setup relay0 for watering plants
 #       - manual control
-#		- timestamps for log files
 #		- if waterInterval is set to something that isn't an integer, ask again
 # - test everything
 
 # imports
 from gpiozero import LED, DigitalInputDevice  # controls rpi gpio, reads yl69 sensor
-from time import sleep, clock_gettime
-import board 
+from time import sleep
+import board # make it so this is unneeded
 import adafruit_dht # read DHT11 data
 import datetime # timestamps
 
-print('Garden Automation System - A 0.0.1 \n')
+print('Garden Automation System - 0.0.1A \n')
 
 # specify schedule
 waterInterval = input('waterIntervals (hours) ' * 3600) # 3600s in hour
@@ -37,7 +37,7 @@ soilMoistureSensor0 = DigitalInputDevice(4) # change 4 to whatever pin is in use
 # will have at least 3 of these, maybe 6(?). figure out which pins
 
 # dht11 sensor
-tempSensorSleepTime = 2.0 # don't read temp sensor too frequently, it will freak out
+tempSensorSleepTime = 3600 # don't read temp sensor too frequently, it will freak out
 tempSensor0 = adafruit_dht.DHT11(board.D17) # change these to not use board pins,
 
 temp0 = tempSensor0.temperature
