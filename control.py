@@ -11,6 +11,8 @@
 # - add stuff:
 #       - manual control
 #		- if waterInterval is set to something that isn't an integer, ask again
+#		- convert output to csv
+# 		- output data to one file, not two
 # - test everything
 
 # imports
@@ -19,6 +21,7 @@ from time import sleep
 import board # make it so this is unneeded
 import adafruit_dht # read DHT11 data
 import datetime # timestamps
+import csv # working with csv
 
 print('Garden Automation System - 0.0.1A \n')
 
@@ -37,7 +40,7 @@ soilMoistureSensor0 = DigitalInputDevice(4) # change 4 to whatever pin is in use
 # will have at least 3 of these, maybe 6(?). figure out which pins
 
 # dht11 sensor
-tempSensorSleepTime = 3600 # don't read temp sensor too frequently, it will freak out
+tempSensorSleepTime = 60 # don't read temp sensor too frequently, it will freak out
 tempSensor0 = adafruit_dht.DHT11(board.D17) # change these to not use board pins,
 
 temp0 = tempSensor0.temperature
@@ -94,14 +97,40 @@ while True:
 		print('humidity0 =' + str(humidity0))
 
 		# data logging (humidity0)
-		humidityLogFile = open('humidityLog.txt', 'a')
-		humidityLogFile.write('\n' + str(currentTime) + str(humidity0)) # add timestamp
-		humidityLogFile.close() # close file
+		#humidityLogFile = open('humidityLog.txt', 'a')
+		#humidityLogFile.write('\n' + str(currentTime) + str(humidity0)) # add timestamp
+		#humidityLogFile.close() # close file
 
 		# data logging (temp0)
-		tempLogFile = open('tempLog.txt', 'a')
-		tempLogFile.write('\n' + str(currentTime) + str(temp0)) # add timestamp
-		tempLogFile.close()
+		#tempLogFile = open('tempLog.txt', 'a')
+		#tempLogFile.write('\n' + str(currentTime) + str(temp0)) # add timestamp
+		#tempLogFile.close()
+
+		# write data to csv
+		with open('weatherLog.csv', mode='w') as weatherData:
+
+			# specify stuff
+			# unsure if formatting it like this works, but it's cleaner
+			weatherDataWrite = csv.writer(
+				weatherData, 
+				delimiter',', 
+				quotechar='"',
+				quoting=csv.QUOTE_MINIMAL
+				)
+			# write temp0
+			weatherDataWrite.writerow([
+				str(currentTime), 
+				str(temp0)
+				])
+
+			# write humidity0
+			weatherDataWrite.writerow([
+				str(currentTime),
+				str(humidity0)
+			])
+
+			sleep(int(tempSensorSleepTime))
+		
 	
 	except RuntimeError as error:
 		print(error.args[0]) # these sensors make errors often
