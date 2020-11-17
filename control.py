@@ -11,8 +11,6 @@
 # - add stuff:
 #       - manual control
 #		- if waterInterval is set to something that isn't an integer, ask again
-#		- convert output to csv
-# 		- output data to one file, not two
 # - test everything
 
 # imports
