@@ -83,9 +83,6 @@ while True:
 		# run function to activate relay
 		print('Level Low')
 		activateRelay0()
-
-# get temp and humidity from tempSensor0
-while True:
 	try:
 		# get current time
 		currentTime = datetime.datetime.now().isoformat()
@@ -99,7 +96,7 @@ while True:
 			# specify stuff
 			weatherDataWrite = csv.writer(
 				weatherData, 
-				delimiter',', 
+				delimiter=',', 
 				quotechar='"',
 				quoting=csv.QUOTE_MINIMAL
 				)
@@ -123,7 +120,3 @@ while True:
 
 	# getting data from sensors too often results in a lot of errors and bad readings
 	sleep(int(tempSensorSleepTime))
-
-while True:
-	activateRelay0()
-	sleep(int(waterInterval))
