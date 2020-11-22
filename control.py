@@ -3,15 +3,16 @@
 # garden automation system
 
 # logs data in txt file, every hour
-# might port to mongoDB or something in future
 # manually set frequency  to water plants
 # it's like the same thing w/o flask graphs
 
-# TODO:
+# TODO: (everything is finished)
 # - add stuff:
 #       - manual control
 #		- if waterInterval is set to something that isn't an integer, ask again
-# - test everything
+# 		- replace anything using board pins with gpio pins
+# - testing
+# 
 
 # imports
 from gpiozero import LED, DigitalInputDevice  # controls rpi gpio, reads yl69 sensor
@@ -24,7 +25,7 @@ import csv # working with csv
 print('Garden Automation System - 0.0.1A \n')
 
 # specify schedule
-waterInterval = input('waterIntervals (hours) ' * 3600) # 3600s in hour
+waterInterval = input('waterIntervals (H) ' * 3600) # 3600s same as 1h
 tempThreshold = input('tempThreshould ')
 wateringDuration = input('wateringDuration (s) ')
 
@@ -48,8 +49,6 @@ humidity0 = tempSensor0.humidity
 relay0TimeOn = wateringDuration
 relay1TimeOn = 120
 relay2TimeOn = 120
-
-# complain if waterInterval or tempThreshould is not an int of flt
 
 # functions for running relays
 def activateRelay0():
@@ -91,24 +90,13 @@ while True:
 		# get current time
 		currentTime = datetime.datetime.now().isoformat()
 
-		print('temp0 =' + str(temp0)) # change these to print to page
+		print('temp0 =' + str(temp0))
 		print('humidity0 =' + str(humidity0))
 
-		# data logging (humidity0)
-		#humidityLogFile = open('humidityLog.txt', 'a')
-		#humidityLogFile.write('\n' + str(currentTime) + str(humidity0)) # add timestamp
-		#humidityLogFile.close() # close file
-
-		# data logging (temp0)
-		#tempLogFile = open('tempLog.txt', 'a')
-		#tempLogFile.write('\n' + str(currentTime) + str(temp0)) # add timestamp
-		#tempLogFile.close()
-
-		# write data to csv
+		# write data to csv file (weatherLog.csv)
 		with open('weatherLog.csv', mode='w') as weatherData:
 
 			# specify stuff
-			# unsure if formatting it like this works, but it's cleaner
 			weatherDataWrite = csv.writer(
 				weatherData, 
 				delimiter',', 
@@ -121,7 +109,7 @@ while True:
 				str(temp0)
 				])
 
-			# write humidity0
+			# write humidity0 (may need to specify what line, col)
 			weatherDataWrite.writerow([
 				str(currentTime),
 				str(humidity0)
@@ -134,7 +122,7 @@ while True:
 		print(error.args[0]) # these sensors make errors often
 
 	# getting data from sensors too often results in a lot of errors and bad readings
-	sleep(tempSensorSleepTime)
+	sleep(int(tempSensorSleepTime))
 
 while True:
 	activateRelay0()
